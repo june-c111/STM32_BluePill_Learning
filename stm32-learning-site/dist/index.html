@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="基于学习笔记整理的 STM32F1 标准库学习路线、外设速查与练习手册。">
+  <meta name="theme-color" content="#071b2b">
+  <title>STM32 F1 学习手册</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23071b2b'/%3E%3Crect x='17' y='17' width='30' height='30' rx='5' fill='%2310b8b0'/%3E%3Cpath d='M25 25h14v14H25z' fill='%23f7c44a'/%3E%3Cg stroke='%2310b8b0' stroke-width='3'%3E%3Cpath d='M10 22h7M10 32h7M10 42h7M47 22h7M47 32h7M47 42h7M22 10v7M32 10v7M42 10v7M22 47v7M32 47v7M42 47v7'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="返回首页">
+      <span class="chip-logo" aria-hidden="true"><i></i></span>
+      <span><strong>STM32 F1</strong><small>学习手册 · 标准库</small></span>
+    </a>
+    <div class="top-actions">
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="搜索 GPIO、PWM、DMA…" autocomplete="off" aria-describedby="searchHint">
+        <kbd>↵ 跳转</kbd>
+      </label>
+      <button class="icon-button" id="themeToggle" type="button" aria-label="切换深浅色主题">◐</button>
+    </div>
+  </header>
+
+  <div class="app-shell" id="top">
+    <aside class="sidebar" aria-label="学习目录">
+      <div class="progress-card">
+        <div class="progress-copy">
+          <span>学习进度</span>
+          <strong id="progressText">0 / 10</strong>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+        <small>勾选章节，进度会保存在本机</small>
+      </div>
+      <nav id="courseNav"></nav>
+      <div class="source-note">
+        <span>资料基线</span>
+        <p>STM32F1 · Cortex‑M3<br>标准外设库 SPL</p>
+      </div>
+    </aside>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-copy">
+          <div class="eyebrow"><span>LEARNING SYSTEM</span><b>STM32F103</b></div>
+          <h1 id="heroTitle">先搭骨架，<br><em>再攻外设。</em></h1>
+          <p>把零散笔记整理成 10 个循序渐进的学习站点。每一章都回答三件事：它解决什么、怎么配置、哪里最容易出错。</p>
+          <div class="hero-metrics" aria-label="课程信息">
+            <div><strong>10</strong><span>核心章节</span></div>
+            <div><strong>3</strong><span>学习阶段</span></div>
+            <div><strong>SPL</strong><span>标准外设库</span></div>
+          </div>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-open="overview">开始第一章 <span>→</span></button>
+            <button class="text-button" type="button" id="resumeButton">继续上次学习</button>
+          </div>
+        </div>
+        <div class="board" aria-label="STM32 核心结构概览">
+          <div class="board-head"><span>STM32F103 · SYSTEM MAP</span><b><i></i> ONLINE · 72 MHz</b></div>
+          <div class="mcu-map">
+            <div class="core-block"><small>ARM</small><strong>Cortex‑M3</strong><span>NVIC · SysTick</span></div>
+            <div class="bus bus-a"><span>AHB</span><b>DMA</b><b>Flash</b></div>
+            <div class="bus bus-b"><span>APB2</span><b>GPIO</b><b>ADC</b><b>USART1</b></div>
+            <div class="bus bus-c"><span>APB1</span><b>TIM</b><b>I²C</b><b>SPI</b></div>
+          </div>
+          <div class="board-foot"><span><i class="dot teal"></i>内核资源</span><span><i class="dot amber"></i>片上外设</span></div>
+        </div>
+      </section>
+
+      <section class="roadmap-section" aria-labelledby="roadmapTitle">
+        <div class="section-heading">
+          <div><span class="section-index">01</span><h2 id="roadmapTitle">学习路线</h2></div>
+          <p>按顺序学更省力；已经熟悉的部分可以直接跳过。</p>
+        </div>
+        <div class="phase-tabs" role="tablist" aria-label="学习阶段">
+          <button class="active" type="button" data-phase="all" role="tab" aria-selected="true">全部</button>
+          <button type="button" data-phase="foundation" role="tab" aria-selected="false">基础 · 1–3</button>
+          <button type="button" data-phase="control" role="tab" aria-selected="false">控制 · 4–6</button>
+          <button type="button" data-phase="communication" role="tab" aria-selected="false">通信 · 7–10</button>
+        </div>
+        <div class="course-grid" id="courseGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <strong>没有找到对应内容</strong>
+          <span>换一个关键词试试，例如“定时器”或“串口”。</span>
+        </div>
+      </section>
+
+      <section class="method-section" aria-labelledby="methodTitle">
+        <div class="section-heading light">
+          <div><span class="section-index">02</span><h2 id="methodTitle">通用配置法</h2></div>
+          <p>大多数外设初始化，都能套进这条主线。</p>
+        </div>
+        <ol class="method-flow">
+          <li><span>01</span><strong>开时钟</strong><p>先找外设挂在哪条总线，再启用 RCC 时钟。</p></li>
+          <li><span>02</span><strong>配 GPIO</strong><p>输入、推挽、开漏或复用，取决于信号方向。</p></li>
+          <li><span>03</span><strong>配外设</strong><p>填写初始化结构体，明确模式、频率与数据宽度。</p></li>
+          <li><span>04</span><strong>开通道</strong><p>需要时配置 NVIC、DMA、AFIO 或触发源。</p></li>
+          <li><span>05</span><strong>使能验证</strong><p>最后 Cmd(ENABLE)，先看标志位，再看现象。</p></li>
+        </ol>
+      </section>
+
+      <section class="reference-section" aria-labelledby="referenceTitle">
+        <div class="section-heading">
+          <div><span class="section-index">03</span><h2 id="referenceTitle">高频速查</h2></div>
+          <p>写代码时最常回看的几个判断。</p>
+        </div>
+        <div class="reference-grid">
+          <article class="reference-card pin-card">
+            <div class="card-label">GPIO 模式</div>
+            <h3>先判断“谁在驱动引脚”</h3>
+            <dl>
+              <div><dt>普通输出</dt><dd>推挽输出</dd></div>
+              <div><dt>I²C</dt><dd>复用开漏</dd></div>
+              <div><dt>USART TX / PWM</dt><dd>复用推挽</dd></div>
+              <div><dt>ADC</dt><dd>模拟输入</dd></div>
+              <div><dt>按键 / EXTI</dt><dd>上拉或下拉输入</dd></div>
+            </dl>
+          </article>
+          <article class="reference-card formula-card">
+            <div class="card-label">定时器公式</div>
+            <h3>更新频率</h3>
+            <div class="formula">f<sub>update</sub> = f<sub>timer</sub> / ((PSC+1) × (ARR+1))</div>
+            <p>PWM 占空比通常由 CCR 与 ARR 的比例决定。先确定频率，再调占空比。</p>
+          </article>
+          <article class="reference-card debug-card">
+            <div class="card-label">排错顺序</div>
+            <h3>现象不对，先别重写</h3>
+            <ol>
+              <li>时钟是否开启</li>
+              <li>引脚与重映射是否正确</li>
+              <li>状态标志是否变化</li>
+              <li>中断挂起位是否清除</li>
+              <li>使能语句是否真的执行</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        <div><strong>STM32 F1 学习手册</strong><span>基于三份学习笔记重新整理 · 内容聚焦标准外设库</span></div>
+        <button type="button" id="resetProgress">重置学习进度</button>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="lessonDialog" aria-labelledby="lessonTitle">
+    <div class="dialog-shell">
+      <button class="dialog-close" type="button" aria-label="关闭章节">×</button>
+      <div class="dialog-progress"><span id="dialogChapter">CHAPTER 01</span><label><input id="dialogDone" type="checkbox"> 标记完成</label></div>
+      <div class="dialog-content">
+        <div class="dialog-heading">
+          <span id="lessonKicker"></span>
+          <h2 id="lessonTitle"></h2>
+          <p id="lessonSummary"></p>
+        </div>
+        <div class="lesson-columns">
+          <section><h3>你要掌握</h3><ul id="lessonGoals"></ul></section>
+          <section><h3>配置主线</h3><ol id="lessonSteps"></ol></section>
+        </div>
+        <div class="lesson-note"><strong>易错提醒</strong><p id="lessonPitfall"></p></div>
+        <div class="code-panel">
+          <div><span>标准库骨架</span><button id="copyCode" type="button">复制代码</button></div>
+          <pre><code id="lessonCode"></code></pre>
+        </div>
+      </div>
+      <div class="dialog-nav"><button id="prevLesson" type="button">← 上一章</button><button id="nextLesson" type="button">下一章 →</button></div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <span id="searchHint" class="sr-only">输入关键词筛选，按回车打开第一个匹配章节</span>
+  <script src="app.js"></script>
+</body>
+</html>

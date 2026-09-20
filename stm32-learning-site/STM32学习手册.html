@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="基于学习笔记整理的 STM32F1 标准库学习路线、外设速查与练习手册。">
+  <meta name="theme-color" content="#071b2b">
+  <title>STM32 F1 学习手册</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23071b2b'/%3E%3Crect x='17' y='17' width='30' height='30' rx='5' fill='%2310b8b0'/%3E%3Cpath d='M25 25h14v14H25z' fill='%23f7c44a'/%3E%3Cg stroke='%2310b8b0' stroke-width='3'%3E%3Cpath d='M10 22h7M10 32h7M10 42h7M47 22h7M47 32h7M47 42h7M22 10v7M32 10v7M42 10v7M22 47v7M32 47v7M42 47v7'/%3E%3C/g%3E%3C/svg%3E">
+  <style>
+:root {
+  --bg: #eef1f3; --panel: #f8fafb; --surface: #fff; --ink: #111820; --muted: #63707c;
+  --line: #d8dee3; --line-strong: #aeb8c0; --navy: #08131d; --cyan: #14d8c7;
+  --cyan-ink: #087c73; --acid: #d7f35b; --orange: #ff8a4c; --shadow: 0 24px 70px rgba(18,31,43,.12);
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);background:var(--bg);font:16px/1.6 "Inter","SF Pro Display","PingFang SC","Microsoft YaHei",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}button{cursor:pointer}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:fixed;z-index:100;left:1rem;top:-5rem;padding:.65rem 1rem;background:var(--acid);color:#07131c}.skip-link:focus{top:1rem}
+.topbar{position:sticky;top:0;z-index:20;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;color:#eef7fa;background:rgba(8,19,29,.96);border-bottom:1px solid #203441;backdrop-filter:blur(16px)}
+.brand{display:flex;align-items:center;gap:.85rem;color:inherit;text-decoration:none}.brand strong{display:block;font-size:.95rem;letter-spacing:.04em}.brand small{display:block;color:#8298a6;font-size:.7rem;letter-spacing:.04em}
+.chip-logo{position:relative;width:36px;height:36px;display:grid;place-items:center;border:1px solid #345062;background:#102532}.chip-logo i{width:13px;height:13px;background:var(--cyan);box-shadow:0 0 16px rgba(20,216,199,.52)}.chip-logo::before,.chip-logo::after{content:"";position:absolute;inset:7px -4px;border-top:1px solid #4e7286;border-bottom:1px solid #4e7286}
+.top-actions{display:flex;gap:.7rem;align-items:center}.search{width:min(38vw,430px);height:40px;display:flex;align-items:center;gap:.65rem;padding:0 .8rem;background:#10232f;border:1px solid #2a4353;border-radius:6px}.search:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(20,216,199,.12)}.search>span{color:var(--cyan);font-size:1.15rem}.search input{min-width:0;flex:1;border:0;outline:0;background:transparent;color:#f3fbfc}.search input::placeholder{color:#78909f}.search kbd{padding:.1rem .4rem;border:1px solid #365161;border-radius:3px;color:#8fa6b3;background:#0a1822;font-size:.67rem}.icon-button{width:40px;height:40px;border:1px solid #2a4353;border-radius:6px;background:#10232f;color:#d4e1e6}.icon-button:hover{border-color:var(--cyan);color:var(--cyan)}
+.app-shell{display:grid;grid-template-columns:246px minmax(0,1fr);max-width:1680px;margin:0 auto;background:var(--panel);box-shadow:0 0 0 1px var(--line)}
+.sidebar{position:sticky;top:68px;height:calc(100vh - 68px);padding:1.4rem 1rem;border-right:1px solid var(--line);overflow:auto;background:#f1f4f5;scrollbar-width:thin}.progress-card{margin-bottom:1.4rem;padding:1rem;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);box-shadow:0 5px 18px rgba(15,31,42,.05)}.progress-copy{display:flex;justify-content:space-between;align-items:baseline;font-size:.78rem;font-weight:650}.progress-copy strong{color:var(--cyan-ink);font:700 .82rem ui-monospace,monospace}.progress-track{height:4px;margin:.75rem 0 .55rem;background:#e5eaed;overflow:hidden}.progress-track span{display:block;width:0;height:100%;background:var(--cyan-ink);transition:width .25s}.progress-card small{color:var(--muted);font-size:.68rem}#courseNav{display:grid;gap:.15rem}.nav-phase{margin:1.15rem .55rem .4rem;color:#85919a;font-size:.63rem;font-weight:800;letter-spacing:.14em}.nav-item{display:grid;grid-template-columns:23px 1fr auto;gap:.5rem;align-items:center;width:100%;padding:.52rem .55rem;border:0;border-radius:5px;background:transparent;color:#29343d;text-align:left;font-size:.78rem}.nav-item:hover{background:var(--surface);color:var(--cyan-ink)}.nav-item .num{color:#98a3aa;font:400 .65rem ui-monospace,monospace}.nav-item .check{width:7px;height:7px;border:1px solid #aab4ba;border-radius:50%}.nav-item.done .check{background:var(--cyan-ink);border-color:var(--cyan-ink);box-shadow:0 0 0 3px rgba(8,124,115,.1)}.source-note{margin:1.5rem .55rem 0;padding-top:1rem;border-top:1px solid var(--line)}.source-note span{color:#87939b;font-size:.62rem;font-weight:800;letter-spacing:.12em}.source-note p{margin:.3rem 0;color:#4b5962;font-size:.72rem}
+main{min-width:0;background:#f8fafb}.hero{position:relative;min-height:470px;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(2rem,5vw,5rem);align-items:center;padding:clamp(3.4rem,6vw,5.5rem) clamp(2rem,6vw,5.5rem);color:#f4f8fa;background:var(--navy);overflow:hidden}.hero::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;background-size:36px 36px;background-image:linear-gradient(#5d8294 1px,transparent 1px),linear-gradient(90deg,#5d8294 1px,transparent 1px);mask-image:linear-gradient(90deg,transparent,#000 65%)}.hero-copy,.board{position:relative;z-index:1}.eyebrow{display:flex;align-items:center;gap:.6rem;font-size:.65rem;font-weight:800;letter-spacing:.14em}.eyebrow span{padding:.27rem .45rem;color:#001d1a;background:var(--cyan);border-radius:2px}.eyebrow b{color:#7e98a8;font-weight:700}.hero h1{margin:.95rem 0 1rem;font-size:clamp(3rem,5.4vw,5.35rem);line-height:.96;letter-spacing:-.055em}.hero h1 em{color:var(--acid);font-style:normal;font-weight:760}.hero-copy>p{max-width:590px;margin:0;color:#9eb2be;font-size:.96rem;line-height:1.7}.hero-metrics{display:flex;margin-top:1.5rem;border-top:1px solid #2d4350;border-bottom:1px solid #2d4350}.hero-metrics div{min-width:105px;padding:.7rem 1rem .7rem 0;margin-right:1rem;border-right:1px solid #2d4350}.hero-metrics strong{display:block;color:#ecf5f7;font:700 1.15rem ui-monospace,monospace}.hero-metrics span{display:block;color:#708b99;font-size:.65rem}.hero-actions{display:flex;align-items:center;gap:1.1rem;margin-top:1.5rem}.primary-button{padding:.68rem .95rem;border:1px solid var(--cyan);border-radius:4px;background:var(--cyan);color:#041c1b;font-weight:800;box-shadow:0 8px 25px rgba(20,216,199,.15)}.primary-button:hover{background:#3ee7d8;transform:translateY(-1px)}.primary-button span{margin-left:.7rem}.text-button{border:0;border-bottom:1px solid #466170;background:transparent;color:#b8c9d1;padding:.4rem 0;font-size:.86rem}.text-button:hover{color:var(--acid);border-color:var(--acid)}
+.board{padding:.85rem;border:1px solid #36505f;border-radius:8px;background:#0c1c27;box-shadow:0 25px 50px rgba(0,0,0,.27),inset 0 0 0 1px rgba(255,255,255,.02)}.board::before{content:"";position:absolute;width:7px;height:7px;top:10px;right:10px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}.board-head,.board-foot{display:flex;justify-content:space-between;align-items:center;color:#688291;font:400 .63rem ui-monospace,monospace;letter-spacing:.08em}.board-head b{display:flex;align-items:center;gap:.35rem;color:#8ba1ad;font-weight:600}.board-head b i{width:5px;height:5px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan)}.mcu-map{margin:1rem 0;display:grid;grid-template-columns:1.15fr 1fr;grid-template-rows:repeat(3,1fr);gap:.45rem}.core-block{grid-row:1/4;display:grid;place-content:center;min-height:238px;padding:1rem;color:#031d1b;background:var(--cyan);text-align:center;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.6)}.core-block small{font-weight:900;letter-spacing:.16em}.core-block strong{font-size:1.55rem}.core-block span{margin-top:.45rem;font:400 .7rem ui-monospace,monospace}.bus{display:grid;grid-template-columns:52px repeat(3,1fr);gap:.3rem;align-items:center;padding:.42rem;border:1px solid #294250;border-radius:3px}.bus span{color:var(--acid);font-size:.62rem;font-weight:900}.bus b{padding:.4rem .15rem;border-radius:2px;background:#142b38;color:#bcd0d8;font:600 .62rem ui-monospace,monospace;text-align:center}.bus-a{grid-template-columns:52px repeat(2,1fr)}.board-foot{justify-content:flex-start;gap:1rem}.dot{display:inline-block;width:6px;height:6px;margin-right:.3rem;border-radius:50%}.dot.teal{background:var(--cyan)}.dot.amber{background:var(--acid)}
+.roadmap-section,.reference-section{padding:4.6rem clamp(1.5rem,5vw,5rem)}.section-heading{display:flex;justify-content:space-between;gap:2rem;align-items:end;margin-bottom:1.7rem}.section-heading>div{display:flex;align-items:center;gap:.8rem}.section-index{display:grid;place-items:center;width:34px;height:34px;border:1px solid var(--line-strong);border-radius:4px;color:var(--cyan-ink);font:800 .7rem ui-monospace,monospace}.section-heading h2{margin:0;font-size:clamp(1.75rem,3vw,2.5rem);letter-spacing:-.045em}.section-heading p{max-width:380px;margin:0;color:var(--muted);font-size:.84rem}.phase-tabs{display:flex;gap:.4rem;margin-bottom:1.1rem;overflow-x:auto}.phase-tabs button{white-space:nowrap;padding:.48rem .78rem;border:1px solid var(--line);border-radius:5px;background:var(--surface);color:var(--muted);font-size:.76rem}.phase-tabs button.active{border-color:var(--ink);background:var(--ink);color:#fff}
+.course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.course-card{position:relative;display:grid;grid-template-columns:58px 1fr 34px;gap:1rem;align-items:center;min-height:138px;padding:1.1rem;border:1px solid var(--line);border-radius:8px;background:var(--surface);transition:.18s;overflow:hidden}.course-card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--cyan-ink);opacity:0}.course-card:hover{transform:translateY(-2px);border-color:#9aa8b1;box-shadow:0 14px 35px rgba(19,34,45,.1)}.course-card:hover::before{opacity:1}.course-number{align-self:stretch;display:grid;place-items:center;border:1px solid #cfe1df;border-radius:5px;background:#eef8f7;color:var(--cyan-ink);font:800 1rem ui-monospace,monospace}.course-card[data-phase="control"] .course-number{border-color:#eadfba;background:#fff9e9;color:#916b10}.course-card[data-phase="communication"] .course-number{border-color:#d5dff8;background:#f2f5ff;color:#4b66ae}.course-info small{color:#78858e;font-size:.65rem;font-weight:800;letter-spacing:.08em}.course-info h3{margin:.1rem 0 .2rem;font-size:1.05rem;line-height:1.35}.course-info p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.55}.course-open{width:34px;height:34px;border:1px solid var(--line);border-radius:50%;background:transparent;color:var(--ink)}.course-open:hover{border-color:var(--cyan-ink);background:#edf8f7;color:var(--cyan-ink)}.course-check{position:absolute;top:.65rem;right:.65rem;width:15px;height:15px;accent-color:var(--cyan-ink)}.empty-state{padding:3.5rem;border:1px dashed var(--line-strong);border-radius:8px;text-align:center;background:var(--surface)}.empty-state span{display:block;margin-top:.25rem;color:var(--muted);font-size:.82rem}
+.method-section{padding:4.8rem clamp(1.5rem,5vw,5rem);background:#0c1b25;color:#eef5f7}.section-heading.light .section-index{border-color:#3c5665;color:var(--acid)}.section-heading.light p{color:#8da4b0}.method-flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,1fr);border:1px solid #2a414f;border-radius:8px;overflow:hidden}.method-flow li{position:relative;min-height:190px;padding:1.25rem;border-right:1px solid #2a414f;background:#10232f}.method-flow li:last-child{border-right:0}.method-flow li>span{display:block;color:var(--cyan);font:700 .68rem ui-monospace,monospace}.method-flow strong{display:block;margin:1.8rem 0 .35rem;font-size:1.05rem}.method-flow p{margin:0;color:#8fa7b3;font-size:.76rem}.method-flow li:hover{background:#132a37}.method-flow li:hover strong{color:var(--acid)}
+.reference-grid{display:grid;grid-template-columns:1.1fr 1fr .9fr;gap:.75rem}.reference-card{min-height:285px;padding:1.35rem;border:1px solid var(--line);border-radius:8px;background:var(--surface)}.reference-card h3{margin:.35rem 0 1.1rem;font-size:1.15rem}.card-label{color:var(--cyan-ink);font-size:.64rem;font-weight:900;letter-spacing:.12em}.pin-card dl{margin:0}.pin-card dl div{display:flex;justify-content:space-between;gap:1rem;padding:.48rem 0;border-bottom:1px solid #e7ebee;font-size:.8rem}.pin-card dt{color:var(--muted)}.pin-card dd{margin:0;font-weight:700;text-align:right}.formula-card{color:#132017;background:var(--acid);border-color:#b7cb48}.formula-card .card-label{color:#556213}.formula{padding:1rem;border:1px solid rgba(17,24,32,.18);border-radius:5px;background:rgba(255,255,255,.38);font:800 .9rem ui-monospace,monospace}.formula-card p{font-size:.78rem}.debug-card ol{padding-left:1.15rem}.debug-card li{padding:.29rem 0;border-bottom:1px solid #e7ebee;font-size:.78rem}
+footer{display:flex;justify-content:space-between;gap:2rem;align-items:center;padding:2rem clamp(1.5rem,5vw,5rem);border-top:1px solid var(--line);background:#f1f4f5}footer strong,footer span{display:block}footer span{color:var(--muted);font-size:.7rem}footer button{border:0;background:transparent;color:var(--cyan-ink);font-size:.76rem;font-weight:750}
+dialog{width:min(900px,calc(100% - 2rem));max-height:calc(100vh - 2rem);padding:0;border:1px solid #38505e;border-radius:10px;color:var(--ink);background:var(--surface);box-shadow:var(--shadow)}dialog::backdrop{background:rgba(2,10,16,.8);backdrop-filter:blur(6px)}.dialog-shell{position:relative}.dialog-close{position:absolute;z-index:2;top:.7rem;right:.85rem;width:34px;height:34px;border:1px solid #38505e;border-radius:50%;background:transparent;color:#c5d4da;font-size:1.2rem}.dialog-close:hover{border-color:var(--cyan);color:var(--cyan)}.dialog-progress{display:flex;justify-content:space-between;align-items:center;padding:.9rem 3.8rem .9rem 1.35rem;background:var(--navy);color:#fff;font-size:.7rem;font-weight:800;letter-spacing:.08em}.dialog-progress input{accent-color:var(--cyan)}.dialog-content{padding:clamp(1.5rem,5vw,3.2rem);max-height:calc(100vh - 138px);overflow-y:auto}.dialog-heading>span{color:var(--cyan-ink);font-size:.68rem;font-weight:900;letter-spacing:.1em}.dialog-heading h2{margin:.25rem 0 .55rem;font-size:clamp(2rem,4vw,3.1rem);letter-spacing:-.05em;line-height:1.08}.dialog-heading p{max-width:700px;margin:0;color:var(--muted);font-size:.9rem}.lesson-columns{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin:2rem 0}.lesson-columns section{padding-top:.9rem;border-top:2px solid var(--ink)}.lesson-columns h3{margin:.15rem 0;font-size:.9rem}.lesson-columns ul,.lesson-columns ol{padding-left:1.15rem}.lesson-columns li{margin:.4rem 0;color:#394854;font-size:.82rem}.lesson-note{display:grid;grid-template-columns:100px 1fr;gap:1rem;padding:.9rem;border-left:3px solid var(--orange);border-radius:0 5px 5px 0;background:#fff3ed}.lesson-note strong{color:#a84d22;font-size:.82rem}.lesson-note p{margin:0;font-size:.82rem}.code-panel{margin-top:1rem;border-radius:6px;overflow:hidden;background:#07151f;color:#cee0e7}.code-panel>div{display:flex;justify-content:space-between;padding:.55rem .9rem;border-bottom:1px solid #263e4c;color:#7894a2;font-size:.68rem}.code-panel button{border:0;background:transparent;color:var(--acid)}pre{margin:0;padding:1.1rem;overflow:auto;font-size:.75rem;line-height:1.6}code{font-family:"Cascadia Code",Consolas,monospace}.dialog-nav{display:flex;justify-content:space-between;padding:.75rem 1rem;border-top:1px solid var(--line)}.dialog-nav button{border:0;background:transparent;color:var(--cyan-ink);font-size:.78rem;font-weight:800}.dialog-nav button:disabled{opacity:.3;cursor:not-allowed}.toast{position:fixed;z-index:100;left:50%;bottom:1.5rem;transform:translate(-50%,130%);padding:.65rem .9rem;border:1px solid #315264;border-radius:5px;background:var(--navy);color:#fff;font-size:.78rem;opacity:0;transition:.2s}.toast.show{transform:translate(-50%,0);opacity:1}
+body.dark{--bg:#07131c;--panel:#0b1b26;--surface:#10232f;--ink:#edf5f7;--muted:#90a5af;--line:#29404d;--line-strong:#3d5663;--shadow:0 24px 70px rgba(0,0,0,.4);background:#07131c}.dark main{background:#0b1b26}.dark .sidebar,.dark footer{background:#091923}.dark .progress-card{background:#10232f}.dark .nav-item{color:#c6d4da}.dark .nav-item:hover{background:#10232f}.dark .source-note p{color:#94a8b2}.dark .phase-tabs button{background:#10232f}.dark .course-card,.dark .reference-card{background:#10232f}.dark .course-number{background:#123431}.dark .pin-card dl div,.dark .debug-card li{border-color:#29404d}.dark .lesson-columns li{color:#c1d0d6}.dark .lesson-note{background:#39241c}.dark .lesson-note p{color:#f0d2c5}.dark .formula-card{color:#132017;background:var(--acid)}
+@media(max-width:1080px){.app-shell{grid-template-columns:1fr}.sidebar{display:none}.hero{grid-template-columns:1fr;min-height:auto}.board{max-width:680px}.method-flow{grid-template-columns:repeat(3,1fr)}.method-flow li:nth-child(3){border-right:0}.reference-grid{grid-template-columns:1fr 1fr}.debug-card{grid-column:1/-1;min-height:auto}}
+@media(max-width:720px){.topbar{height:62px;padding:0 .8rem}.brand small,.search kbd{display:none}.search{width:45vw}.app-shell{box-shadow:none}.hero{padding:3.3rem 1.15rem}.hero h1{font-size:3.15rem}.hero-metrics div{min-width:86px;padding-right:.65rem;margin-right:.65rem}.hero-actions{align-items:flex-start;flex-direction:column}.board{padding:.7rem}.mcu-map{grid-template-columns:1fr}.core-block{grid-row:auto;min-height:180px}.bus{grid-template-columns:48px repeat(3,1fr)}.bus-a{grid-template-columns:48px repeat(2,1fr)}.roadmap-section,.reference-section,.method-section{padding:3.5rem 1rem}.section-heading{display:block}.section-heading p{margin-top:.65rem}.course-grid{grid-template-columns:1fr}.course-card{grid-template-columns:48px 1fr;min-height:128px}.course-open{display:none}.method-flow{grid-template-columns:1fr}.method-flow li{min-height:auto;border-right:0;border-bottom:1px solid #2a414f}.method-flow strong{margin:.55rem 0 .25rem}.reference-grid{grid-template-columns:1fr}.debug-card{grid-column:auto}.lesson-columns{grid-template-columns:1fr;gap:1rem}.lesson-note{grid-template-columns:1fr}.dialog-progress{padding-left:1rem}footer{align-items:flex-start;flex-direction:column}.mcu-map .bus b{font-size:.56rem}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到正文</a>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="返回首页">
+      <span class="chip-logo" aria-hidden="true"><i></i></span>
+      <span><strong>STM32 F1</strong><small>学习手册 · 标准库</small></span>
+    </a>
+    <div class="top-actions">
+      <label class="search">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search" placeholder="搜索 GPIO、PWM、DMA…" autocomplete="off" aria-describedby="searchHint">
+        <kbd>↵ 跳转</kbd>
+      </label>
+      <button class="icon-button" id="themeToggle" type="button" aria-label="切换深浅色主题">◐</button>
+    </div>
+  </header>
+
+  <div class="app-shell" id="top">
+    <aside class="sidebar" aria-label="学习目录">
+      <div class="progress-card">
+        <div class="progress-copy">
+          <span>学习进度</span>
+          <strong id="progressText">0 / 10</strong>
+        </div>
+        <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+        <small>勾选章节，进度会保存在本机</small>
+      </div>
+      <nav id="courseNav"></nav>
+      <div class="source-note">
+        <span>资料基线</span>
+        <p>STM32F1 · Cortex‑M3<br>标准外设库 SPL</p>
+      </div>
+    </aside>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-copy">
+          <div class="eyebrow"><span>LEARNING SYSTEM</span><b>STM32F103</b></div>
+          <h1 id="heroTitle">先搭骨架，<br><em>再攻外设。</em></h1>
+          <p>把零散笔记整理成 10 个循序渐进的学习站点。每一章都回答三件事：它解决什么、怎么配置、哪里最容易出错。</p>
+          <div class="hero-metrics" aria-label="课程信息">
+            <div><strong>10</strong><span>核心章节</span></div>
+            <div><strong>3</strong><span>学习阶段</span></div>
+            <div><strong>SPL</strong><span>标准外设库</span></div>
+          </div>
+          <div class="hero-actions">
+            <button class="primary-button" type="button" data-open="overview">开始第一章 <span>→</span></button>
+            <button class="text-button" type="button" id="resumeButton">继续上次学习</button>
+          </div>
+        </div>
+        <div class="board" aria-label="STM32 核心结构概览">
+          <div class="board-head"><span>STM32F103 · SYSTEM MAP</span><b><i></i> ONLINE · 72 MHz</b></div>
+          <div class="mcu-map">
+            <div class="core-block"><small>ARM</small><strong>Cortex‑M3</strong><span>NVIC · SysTick</span></div>
+            <div class="bus bus-a"><span>AHB</span><b>DMA</b><b>Flash</b></div>
+            <div class="bus bus-b"><span>APB2</span><b>GPIO</b><b>ADC</b><b>USART1</b></div>
+            <div class="bus bus-c"><span>APB1</span><b>TIM</b><b>I²C</b><b>SPI</b></div>
+          </div>
+          <div class="board-foot"><span><i class="dot teal"></i>内核资源</span><span><i class="dot amber"></i>片上外设</span></div>
+        </div>
+      </section>
+
+      <section class="roadmap-section" aria-labelledby="roadmapTitle">
+        <div class="section-heading">
+          <div><span class="section-index">01</span><h2 id="roadmapTitle">学习路线</h2></div>
+          <p>按顺序学更省力；已经熟悉的部分可以直接跳过。</p>
+        </div>
+        <div class="phase-tabs" role="tablist" aria-label="学习阶段">
+          <button class="active" type="button" data-phase="all" role="tab" aria-selected="true">全部</button>
+          <button type="button" data-phase="foundation" role="tab" aria-selected="false">基础 · 1–3</button>
+          <button type="button" data-phase="control" role="tab" aria-selected="false">控制 · 4–6</button>
+          <button type="button" data-phase="communication" role="tab" aria-selected="false">通信 · 7–10</button>
+        </div>
+        <div class="course-grid" id="courseGrid"></div>
+        <div class="empty-state" id="emptyState" hidden>
+          <strong>没有找到对应内容</strong>
+          <span>换一个关键词试试，例如“定时器”或“串口”。</span>
+        </div>
+      </section>
+
+      <section class="method-section" aria-labelledby="methodTitle">
+        <div class="section-heading light">
+          <div><span class="section-index">02</span><h2 id="methodTitle">通用配置法</h2></div>
+          <p>大多数外设初始化，都能套进这条主线。</p>
+        </div>
+        <ol class="method-flow">
+          <li><span>01</span><strong>开时钟</strong><p>先找外设挂在哪条总线，再启用 RCC 时钟。</p></li>
+          <li><span>02</span><strong>配 GPIO</strong><p>输入、推挽、开漏或复用，取决于信号方向。</p></li>
+          <li><span>03</span><strong>配外设</strong><p>填写初始化结构体，明确模式、频率与数据宽度。</p></li>
+          <li><span>04</span><strong>开通道</strong><p>需要时配置 NVIC、DMA、AFIO 或触发源。</p></li>
+          <li><span>05</span><strong>使能验证</strong><p>最后 Cmd(ENABLE)，先看标志位，再看现象。</p></li>
+        </ol>
+      </section>
+
+      <section class="reference-section" aria-labelledby="referenceTitle">
+        <div class="section-heading">
+          <div><span class="section-index">03</span><h2 id="referenceTitle">高频速查</h2></div>
+          <p>写代码时最常回看的几个判断。</p>
+        </div>
+        <div class="reference-grid">
+          <article class="reference-card pin-card">
+            <div class="card-label">GPIO 模式</div>
+            <h3>先判断“谁在驱动引脚”</h3>
+            <dl>
+              <div><dt>普通输出</dt><dd>推挽输出</dd></div>
+              <div><dt>I²C</dt><dd>复用开漏</dd></div>
+              <div><dt>USART TX / PWM</dt><dd>复用推挽</dd></div>
+              <div><dt>ADC</dt><dd>模拟输入</dd></div>
+              <div><dt>按键 / EXTI</dt><dd>上拉或下拉输入</dd></div>
+            </dl>
+          </article>
+          <article class="reference-card formula-card">
+            <div class="card-label">定时器公式</div>
+            <h3>更新频率</h3>
+            <div class="formula">f<sub>update</sub> = f<sub>timer</sub> / ((PSC+1) × (ARR+1))</div>
+            <p>PWM 占空比通常由 CCR 与 ARR 的比例决定。先确定频率，再调占空比。</p>
+          </article>
+          <article class="reference-card debug-card">
+            <div class="card-label">排错顺序</div>
+            <h3>现象不对，先别重写</h3>
+            <ol>
+              <li>时钟是否开启</li>
+              <li>引脚与重映射是否正确</li>
+              <li>状态标志是否变化</li>
+              <li>中断挂起位是否清除</li>
+              <li>使能语句是否真的执行</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <footer>
+        <div><strong>STM32 F1 学习手册</strong><span>基于三份学习笔记重新整理 · 内容聚焦标准外设库</span></div>
+        <button type="button" id="resetProgress">重置学习进度</button>
+      </footer>
+    </main>
+  </div>
+
+  <dialog id="lessonDialog" aria-labelledby="lessonTitle">
+    <div class="dialog-shell">
+      <button class="dialog-close" type="button" aria-label="关闭章节">×</button>
+      <div class="dialog-progress"><span id="dialogChapter">CHAPTER 01</span><label><input id="dialogDone" type="checkbox"> 标记完成</label></div>
+      <div class="dialog-content">
+        <div class="dialog-heading">
+          <span id="lessonKicker"></span>
+          <h2 id="lessonTitle"></h2>
+          <p id="lessonSummary"></p>
+        </div>
+        <div class="lesson-columns">
+          <section><h3>你要掌握</h3><ul id="lessonGoals"></ul></section>
+          <section><h3>配置主线</h3><ol id="lessonSteps"></ol></section>
+        </div>
+        <div class="lesson-note"><strong>易错提醒</strong><p id="lessonPitfall"></p></div>
+        <div class="code-panel">
+          <div><span>标准库骨架</span><button id="copyCode" type="button">复制代码</button></div>
+          <pre><code id="lessonCode"></code></pre>
+        </div>
+      </div>
+      <div class="dialog-nav"><button id="prevLesson" type="button">← 上一章</button><button id="nextLesson" type="button">下一章 →</button></div>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <span id="searchHint" class="sr-only">输入关键词筛选，按回车打开第一个匹配章节</span>
+  <script>
+const lessons = [
+  {
+    id: "overview", phase: "foundation", phaseLabel: "基础", title: "认识 STM32 与开发环境", tag: "MCU · 工程结构", duration: "35 分钟",
+    desc: "理解 Cortex‑M3、片上外设、时钟总线与标准库工程。",
+    summary: "先建立“内核—总线—外设—引脚”的全局地图，再开始写代码。你会知道一个库函数最终在控制什么。",
+    goals: ["区分内核资源与片上外设", "认识 Flash、SRAM、NVIC、SysTick", "看懂标准库工程中的启动文件与用户代码"],
+    steps: ["确认芯片型号与启动文件", "加入 CMSIS、标准库与 USER 文件", "配置头文件搜索路径", "选择下载器并验证最小工程"],
+    pitfall: "启动文件必须与芯片容量型号匹配；工程能编译不代表下载配置正确，先用最小闪灯程序验证链路。",
+    code: `#include "stm32f10x.h"\n\nint main(void)\n{\n    SystemInit();\n    while (1) {\n        /* 从最小可运行工程开始 */\n    }\n}`
+  },
+  {
+    id: "gpio", phase: "foundation", phaseLabel: "基础", title: "GPIO 输入与输出", tag: "GPIO · RCC", duration: "50 分钟",
+    desc: "从 LED 和按键入手，掌握时钟、模式、速度与读写函数。",
+    summary: "GPIO 是大多数外设的入口。判断模式的关键不是背枚举，而是先问：信号由谁驱动、是否需要复用、是否需要上拉。",
+    goals: ["理解推挽、开漏、上拉、下拉与浮空", "熟悉 GPIO_InitTypeDef", "会读取输入、写入输出并封装驱动"],
+    steps: ["开启对应 GPIO 的 APB2 时钟", "定义并填写 GPIO_InitTypeDef", "调用 GPIO_Init", "用 SetBits / ResetBits / ReadInputDataBit 验证"],
+    pitfall: "PA15、PB3、PB4 默认与调试接口有关。解除调试复用前先保留 SWD，否则可能暂时无法继续下载。",
+    code: `RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);\nGPIO_InitTypeDef io;\nio.GPIO_Pin = GPIO_Pin_1;\nio.GPIO_Mode = GPIO_Mode_Out_PP;\nio.GPIO_Speed = GPIO_Speed_50MHz;\nGPIO_Init(GPIOA, &io);\nGPIO_SetBits(GPIOA, GPIO_Pin_1);`
+  },
+  {
+    id: "exti", phase: "foundation", phaseLabel: "基础", title: "EXTI 与 NVIC 中断", tag: "EXTI · AFIO · NVIC", duration: "60 分钟",
+    desc: "把按键轮询升级为边沿触发，理解中断线与优先级。",
+    summary: "外部中断链路由 GPIO、AFIO、EXTI 和 NVIC 共同完成。沿着信号路径配置，比死记函数更可靠。",
+    goals: ["理解 EXTI0–15 与 GPIO Pin 的映射", "会设置触发边沿和 NVIC 优先级", "正确判断并清除挂起位"],
+    steps: ["开启 GPIO 与 AFIO 时钟", "把引脚配置为输入", "用 GPIO_EXTILineConfig 选择端口", "配置 EXTI 与 NVIC", "在中断函数中处理并清除标志"],
+    pitfall: "同一编号的 Pin 共用一条 EXTI 线，例如 PA0 与 PB0 不能同时独立映射到 EXTI0。处理中断后必须清除挂起位。",
+    code: `void EXTI0_IRQHandler(void)\n{\n    if (EXTI_GetITStatus(EXTI_Line0) == SET) {\n        /* 快速处理，耗时任务留给主循环 */\n        EXTI_ClearITPendingBit(EXTI_Line0);\n    }\n}`
+  },
+  {
+    id: "timer", phase: "control", phaseLabel: "控制", title: "定时器与 PWM 输出", tag: "TIM · PWM", duration: "90 分钟",
+    desc: "从固定周期中断到舵机 PWM，建立 PSC、ARR、CCR 的直觉。",
+    summary: "定时器先对输入时钟分频，再由计数器与自动重装值决定周期；输出比较把计数值与 CCR 比较，从而生成 PWM。",
+    goals: ["会计算 PSC 与 ARR", "区分基本、通用和高级定时器", "用输出比较生成频率与占空比可调的 PWM"],
+    steps: ["开启 TIM 与相关 GPIO 时钟", "GPIO 配置为复用推挽", "配置时基 PSC、ARR", "配置输出比较模式与 CCR", "使能预装载并启动定时器"],
+    pitfall: "公式中的 PSC 和 ARR 都要加 1。使用高级定时器输出 PWM 时，还需要开启主输出。",
+    code: `TIM_TimeBaseInitTypeDef base;\nbase.TIM_Prescaler = 72 - 1;\nbase.TIM_Period = 20000 - 1;\nbase.TIM_CounterMode = TIM_CounterMode_Up;\nbase.TIM_ClockDivision = TIM_CKD_DIV1;\nTIM_TimeBaseInit(TIM2, &base);\nTIM_Cmd(TIM2, ENABLE);`
+  },
+  {
+    id: "capture", phase: "control", phaseLabel: "控制", title: "输入捕获与编码器", tag: "IC · PWMI · ENCODER", duration: "80 分钟",
+    desc: "测频率、占空比与正交编码器速度，串起定时器输入链路。",
+    summary: "输入捕获把边沿到来时的 CNT 锁存进 CCR；编码器接口则让 A/B 相直接控制计数方向与计数时钟。",
+    goals: ["用输入捕获测量周期", "用 PWMI 同时测频率和占空比", "用编码器模式得到位置与速度"],
+    steps: ["配置通道 GPIO 为输入", "设置时基量程", "选择 TI 映射、极性与滤波", "配置主从触发或编码器接口", "定期读取 CCR / CNT"],
+    pitfall: "PWMI 通常占用两个捕获通道；编码器模式使用 CH1 与 CH2。测速度时注意 CNT 溢出和有符号方向。",
+    code: `TIM_EncoderInterfaceConfig(TIM3,\n    TIM_EncoderMode_TI12,\n    TIM_ICPolarity_Rising,\n    TIM_ICPolarity_Rising);\nTIM_SetCounter(TIM3, 0);\nTIM_Cmd(TIM3, ENABLE);`
+  },
+  {
+    id: "adc", phase: "control", phaseLabel: "控制", title: "ADC 与 DMA 采样", tag: "ADC · DMA", duration: "95 分钟",
+    desc: "把模拟电压变成稳定数据，并用 DMA 完成多通道搬运。",
+    summary: "ADC 负责转换，DMA 负责搬运。单通道先学会触发、等待与读取，再用扫描模式和循环 DMA 扩展到多通道。",
+    goals: ["理解 12 位量化、采样时间与校准", "区分规则组、注入组与扫描模式", "配置 ADC 扫描 + DMA 循环搬运"],
+    steps: ["配置 ADCCLK 分频并开时钟", "GPIO 设置为模拟输入", "配置通道顺序与采样时间", "上电并执行 ADC 校准", "多通道时配置 DMA1 Channel1"],
+    pitfall: "ADC 时钟不要超过芯片规定上限。DMA 的数据宽度应与 ADC_DR 匹配；改传输计数前先关闭 DMA。",
+    code: `ADC_ResetCalibration(ADC1);\nwhile (ADC_GetResetCalibrationStatus(ADC1));\nADC_StartCalibration(ADC1);\nwhile (ADC_GetCalibrationStatus(ADC1));\nADC_DMACmd(ADC1, ENABLE);\nADC_SoftwareStartConvCmd(ADC1, ENABLE);`
+  },
+  {
+    id: "usart", phase: "communication", phaseLabel: "通信", title: "USART 串口通信", tag: "USART · UART", duration: "70 分钟",
+    desc: "完成调试打印、命令接收和中断式数据收发。",
+    summary: "串口是最实用的调试入口。先跑通 8N1 发送，再增加接收中断；大量数据再考虑 DMA。",
+    goals: ["理解波特率、数据位、校验位和停止位", "会配置 TX/RX 引脚与 USART", "掌握发送标志和接收中断"],
+    steps: ["开启 GPIO 与 USART 时钟", "TX 配复用推挽，RX 配输入", "配置波特率与 8N1", "需要接收时开启 RXNE 中断与 NVIC", "使能 USART 并验证收发"],
+    pitfall: "板间连接要 TX 对 RX，并共地。USART1 在 APB2，USART2/3 在 APB1，时钟来源不同会影响波特率。",
+    code: `USART_SendData(USART1, data);\nwhile (USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);\n\nif (USART_GetITStatus(USART1, USART_IT_RXNE)) {\n    uint8_t rx = USART_ReceiveData(USART1);\n}`
+  },
+  {
+    id: "i2c", phase: "communication", phaseLabel: "通信", title: "I²C 与传感器", tag: "I²C · OLED · MPU6050", duration: "95 分钟",
+    desc: "理解起止条件、寻址与应答，完成寄存器读写。",
+    summary: "I²C 用两根开漏总线连接多个器件。真正需要掌握的是时序状态：起始、地址、应答、数据、停止。",
+    goals: ["理解 SCL、SDA、7 位地址与 ACK/NACK", "会写单字节寄存器读写函数", "能定位地址、上拉与时序问题"],
+    steps: ["确认器件 7 位地址与上拉电阻", "GPIO 配复用开漏或软件开漏", "配置 I²C 时钟与应答", "按事件顺序发送 START、地址和数据", "等待状态并设置超时"],
+    pitfall: "很多手册给的是 7 位地址，而库函数发送时会再加入读写位。不要把 8 位地址和 7 位地址混用。",
+    code: `I2C_GenerateSTART(I2C1, ENABLE);\nwhile (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_MODE_SELECT));\nI2C_Send7bitAddress(I2C1, devAddr, I2C_Direction_Transmitter);\nwhile (!I2C_CheckEvent(I2C1, I2C_EVENT_MASTER_TRANSMITTER_MODE_SELECTED));`
+  },
+  {
+    id: "spi", phase: "communication", phaseLabel: "通信", title: "SPI 与外部存储", tag: "SPI · W25Q64", duration: "80 分钟",
+    desc: "掌握四线同步通信、工作模式与片选管理。",
+    summary: "SPI 没有统一设备地址，主机通过片选选择从机。CPOL、CPHA、位序和最大时钟必须与器件手册一致。",
+    goals: ["理解 SCK、MOSI、MISO、NSS", "会选择 SPI 模式与数据位序", "实现全双工字节交换"],
+    steps: ["开启 SPI 与 GPIO 时钟", "配置 SCK/MOSI 为复用推挽，MISO 为输入", "片选通常用普通推挽 GPIO", "配置主机、模式、分频与位序", "轮询 TXE/RXNE 完成交换"],
+    pitfall: "先拉低片选，再完成整条命令，最后拉高。只发送不读取也要清理接收数据，否则可能溢出。",
+    code: `while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET);\nSPI_I2S_SendData(SPI1, data);\nwhile (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET);\nreturn SPI_I2S_ReceiveData(SPI1);`
+  },
+  {
+    id: "project", phase: "communication", phaseLabel: "综合", title: "综合项目：舵机控制台", tag: "PWM · ADC · USART", duration: "半天",
+    desc: "把输入、控制与通信串成完整数据流，形成工程化习惯。",
+    summary: "用 ADC 采集旋钮位置，映射为舵机 PWM 脉宽，再通过串口输出角度。重点不只是跑通，而是分层组织驱动与应用。",
+    goals: ["把多个外设组合成完整任务", "用非阻塞方式组织主循环", "建立初始化、驱动与应用分层"],
+    steps: ["分别验证 ADC、PWM 与 USART", "定义统一的数据范围和单位", "加入滤波与限幅", "按固定周期更新控制量", "输出调试数据并检查边界"],
+    pitfall: "不要在中断里做串口长发送或大段延时。先保证每个模块独立可测，再逐个接入主流程。",
+    code: `while (1)\n{\n    uint16_t raw = ADC_Read();\n    uint16_t pulse = Map(raw, 0, 4095, 500, 2500);\n    Servo_SetPulse(pulse);\n    Debug_Print(raw, pulse);\n    Delay_ms(20);\n}`
+  }
+];
+
+const phaseNames = { foundation: "基础打底", control: "定时与采样", communication: "通信与综合" };
+const storageKey = "stm32-study-progress-v1";
+const themeKey = "stm32-study-theme";
+let completed = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
+let activePhase = "all";
+let currentLesson = 0;
+
+const grid = document.querySelector("#courseGrid");
+const nav = document.querySelector("#courseNav");
+const searchInput = document.querySelector("#searchInput");
+const dialog = document.querySelector("#lessonDialog");
+
+function renderNav() {
+  nav.innerHTML = Object.entries(phaseNames).map(([phase, label]) => {
+    const items = lessons.filter(x => x.phase === phase).map((lesson, i) => {
+      const globalIndex = lessons.indexOf(lesson);
+      return `<button class="nav-item ${completed.has(lesson.id) ? "done" : ""}" data-open="${lesson.id}" type="button"><span class="num">${String(globalIndex + 1).padStart(2, "0")}</span><span>${lesson.title}</span><i class="check" aria-hidden="true"></i></button>`;
+    }).join("");
+    return `<div class="nav-phase">${label}</div>${items}`;
+  }).join("");
+}
+
+function renderCards() {
+  const query = searchInput.value.trim().toLowerCase();
+  const filtered = lessons.filter(x => (activePhase === "all" || x.phase === activePhase) && [x.title, x.tag, x.desc, x.summary, ...x.goals].join(" ").toLowerCase().includes(query));
+  grid.innerHTML = filtered.map(lesson => {
+    const i = lessons.indexOf(lesson);
+    return `<article class="course-card" data-phase="${lesson.phase}">
+      <input class="course-check" data-check="${lesson.id}" type="checkbox" ${completed.has(lesson.id) ? "checked" : ""} aria-label="标记《${lesson.title}》为完成">
+      <div class="course-number">${String(i + 1).padStart(2, "0")}</div>
+      <div class="course-info"><small>${lesson.tag} · ${lesson.duration}</small><h3>${lesson.title}</h3><p>${lesson.desc}</p></div>
+      <button class="course-open" type="button" data-open="${lesson.id}" aria-label="打开《${lesson.title}》">→</button>
+    </article>`;
+  }).join("");
+  document.querySelector("#emptyState").hidden = filtered.length > 0;
+  return filtered;
+}
+
+function updateProgress() {
+  const count = completed.size;
+  document.querySelector("#progressText").textContent = `${count} / ${lessons.length}`;
+  document.querySelector("#progressBar").style.width = `${count / lessons.length * 100}%`;
+  localStorage.setItem(storageKey, JSON.stringify([...completed]));
+  renderNav();
+}
+
+function setComplete(id, value) {
+  value ? completed.add(id) : completed.delete(id);
+  updateProgress(); renderCards();
+  if (dialog.open && lessons[currentLesson].id === id) document.querySelector("#dialogDone").checked = value;
+}
+
+function openLesson(id) {
+  const index = lessons.findIndex(x => x.id === id);
+  if (index < 0) return;
+  currentLesson = index;
+  const lesson = lessons[index];
+  localStorage.setItem("stm32-last-lesson", lesson.id);
+  document.querySelector("#dialogChapter").textContent = `CHAPTER ${String(index + 1).padStart(2, "0")}`;
+  document.querySelector("#lessonKicker").textContent = `${lesson.phaseLabel} · ${lesson.tag} · ${lesson.duration}`;
+  document.querySelector("#lessonTitle").textContent = lesson.title;
+  document.querySelector("#lessonSummary").textContent = lesson.summary;
+  document.querySelector("#lessonGoals").innerHTML = lesson.goals.map(x => `<li>${x}</li>`).join("");
+  document.querySelector("#lessonSteps").innerHTML = lesson.steps.map(x => `<li>${x}</li>`).join("");
+  document.querySelector("#lessonPitfall").textContent = lesson.pitfall;
+  document.querySelector("#lessonCode").textContent = lesson.code;
+  document.querySelector("#dialogDone").checked = completed.has(lesson.id);
+  document.querySelector("#prevLesson").disabled = index === 0;
+  document.querySelector("#nextLesson").disabled = index === lessons.length - 1;
+  dialog.showModal();
+}
+
+function showToast(message) {
+  const toast = document.querySelector("#toast");
+  toast.textContent = message; toast.classList.add("show");
+  clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+
+document.addEventListener("click", event => {
+  const opener = event.target.closest("[data-open]");
+  if (opener) openLesson(opener.dataset.open);
+});
+document.addEventListener("change", event => {
+  if (event.target.matches("[data-check]")) setComplete(event.target.dataset.check, event.target.checked);
+});
+document.querySelectorAll("[data-phase]").forEach(button => button.addEventListener("click", () => {
+  activePhase = button.dataset.phase;
+  document.querySelectorAll(".phase-tabs button").forEach(x => { x.classList.toggle("active", x === button); x.setAttribute("aria-selected", x === button); });
+  renderCards();
+}));
+searchInput.addEventListener("input", renderCards);
+searchInput.addEventListener("keydown", event => {
+  if (event.key !== "Enter") return;
+  event.preventDefault();
+  const matches = renderCards();
+  if (matches.length) openLesson(matches[0].id);
+  else showToast("没有匹配的章节");
+});
+document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); searchInput.focus(); } });
+document.querySelector(".dialog-close").addEventListener("click", () => dialog.close());
+dialog.addEventListener("click", e => { if (e.target === dialog) dialog.close(); });
+document.querySelector("#dialogDone").addEventListener("change", e => setComplete(lessons[currentLesson].id, e.target.checked));
+document.querySelector("#prevLesson").addEventListener("click", () => openLesson(lessons[currentLesson - 1].id));
+document.querySelector("#nextLesson").addEventListener("click", () => openLesson(lessons[currentLesson + 1].id));
+document.querySelector("#copyCode").addEventListener("click", async () => { await navigator.clipboard.writeText(lessons[currentLesson].code); showToast("代码已复制"); });
+document.querySelector("#resumeButton").addEventListener("click", () => openLesson(localStorage.getItem("stm32-last-lesson") || lessons[0].id));
+document.querySelector("#resetProgress").addEventListener("click", () => { completed.clear(); updateProgress(); renderCards(); showToast("学习进度已重置"); });
+
+const preferredTheme = localStorage.getItem(themeKey) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+document.body.classList.toggle("dark", preferredTheme === "dark");
+document.querySelector("#themeToggle").addEventListener("click", () => { document.body.classList.toggle("dark"); localStorage.setItem(themeKey, document.body.classList.contains("dark") ? "dark" : "light"); });
+
+renderNav(); renderCards(); updateProgress();
+
+</script>
+</body>
+</html>
+
