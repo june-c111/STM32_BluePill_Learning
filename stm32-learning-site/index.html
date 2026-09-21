@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>STM32 · 阅读与笔记</title>
+  <meta name="description" content="STM32 标准库手写笔记：按章节阅读、原图标注与本地笔记。">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231d4ed8'/%3E%3Cpath d='M8 8h16v16H8zM12 4v4m8-4v4M12 24v4m8-4v4M4 12h4m-4 8h4m16-8h4m-4 8h4' stroke='white' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="pages.js" defer></script><script src="app.js" defer></script>
+</head>
+<body>
+<header class="app-header"><div class="brand"><span class="chip">ST</span><div><strong>STM32 <span>学习笔记</span></strong><small>标准库 · 手写原稿</small></div></div><div class="header-actions"><span id="saveStatus" role="status">仅保存在此浏览器</span><button id="export">导出笔记</button><button id="import">导入笔记</button><input type="file" id="importFile" accept="application/json,.json" hidden></div></header>
+<div class="workspace">
+<aside class="sidebar"><details open id="tocPanel"><summary>章节目录 <span>11 章 / 123 页</span></summary><nav id="chapters" aria-label="章节目录"></nav></details><div class="sidebar-foot">原稿逐页呈现<br>学习进度会自动记住</div></aside>
+<main class="reader">
+  <div class="chapter-heading"><div><p class="eyebrow" id="chapterNumber"></p><h1 id="chapterTitle"></h1></div><span id="chapterRange"></span></div>
+  <div class="toolbar"><div class="tools" aria-label="标注工具"><button data-tool="read" aria-pressed="true">浏览</button><button data-tool="rect" aria-pressed="false">框选</button><button data-tool="pen" aria-pressed="false">画笔</button></div><div class="colors" aria-label="标注颜色"><button data-color="#e5a000" class="color amber" aria-label="金黄色" aria-pressed="true"></button><button data-color="#ef4444" class="color red" aria-label="红色" aria-pressed="false"></button><button data-color="#2563eb" class="color blue" aria-label="蓝色" aria-pressed="false"></button></div><span class="toolbar-divider"></span><button id="zoomOut" aria-label="缩小">−</button><output id="zoomLabel">100%</output><button id="zoomIn" aria-label="放大">＋</button><button id="fit">适宽</button></div>
+  <div class="reading-area" id="readingArea"><div id="paper" class="paper"><img id="pageImage" alt=""><svg id="overlay" xmlns="http://www.w3.org/2000/svg" aria-label="原图标注区域"></svg></div><p id="imageError" hidden>此页图片加载失败，请确认 pages 文件夹与网页放在一起。</p></div>
+  <div class="pagination"><button id="prev">← 上一页</button><label>第 <input id="pageNumber" type="number" min="1" max="123" aria-label="跳转页码"> / 123 页</label><button id="next">下一页 →</button></div>
+</main>
+<aside class="notes"><div class="notes-heading"><h2>我的笔记</h2><span id="notePage"></span></div><p class="hint" id="toolHint">在原图上框选或画线，再在这里写下理解。</p><label class="note-label" for="pageNote">本页随记</label><textarea id="pageNote" placeholder="记录思路、疑问，或要再做一次的实验…"></textarea><div class="marks-heading"><h3>图上标注</h3><span id="markCount">0</span></div><div id="marks"></div><div class="storage-hint">笔记仅保存在当前浏览器。请定期导出备份；更换浏览器或清理数据后，可导入恢复。</div></aside>
+</div>
+<div id="toast" role="status" hidden></div>
+</body></html>
